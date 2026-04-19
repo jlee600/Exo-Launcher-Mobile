@@ -18,6 +18,7 @@ class Local_Paths:
     
     SETUP_DEVICES_SCRIPT = "/home/boggs/trek/trek/util/misc/scripts/setup_devices.sh"
     DEVICES_SCRIPT = "/home/boggs/trek/trek/util/misc/scripts/devices.sh"
+    COMPARE_SCRIPT = "/home/boggs/hip-exo-controllers/readiness/config_compare.py"
 
 class Wifi_Credentials:
     SSID = "CAREN_5G"

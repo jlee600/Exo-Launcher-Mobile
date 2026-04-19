@@ -74,10 +74,6 @@ def run_controller(name):
 
 
 def run_flexible_controller(name, config):
-    """
-    Flexible Controller용 Config를 로컬에 저장하고 실행합니다.
-    (기존 SCP 전송 로직이 완전히 제거되었습니다.)
-    """
     normalized = name if name.endswith(".py") else f"{name}.py"
     
     try:
@@ -104,9 +100,6 @@ def run_flexible_controller(name, config):
 
 
 def stop_controller(name):
-    """
-    실행 중인 컨트롤러와 관련 프로세스를 강제 종료하고 초기 상태로 되돌립니다.
-    """
     normalized = name if name.endswith(".py") else f"{name}.py"
 
     _kill_process("connection_hub.py")
