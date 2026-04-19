@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>EPIC Mobile Controller</title>
+  <link rel="stylesheet" href="./assets/mobile_style.css">
+</head>
+<body>
+  <header>
+    <h1>EPIC Mobile Launcher</h1>
+    <div id="connection-status" class="status-badge">Connecting...</div>
+  </header>
+
+  <main>
+    <section class="info-card">
+      <div class="info-row">
+        <span>SSID:</span> <strong id="wifi-name">—</strong>
+      </div>
+      <div class="info-row">
+        <span>Updated:</span> <span id="last-update">—</span>
+      </div>
+    </section>
+
+    <section id="controller-list" class="grid-container">
+      </section>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <div id="flex-modal" class="modal" hidden>
+    <div class="modal-content">
+      <h3>Flexible Device Config</h3>
+      <div id="flex-form">
+        </div>
+      <div class="modal-actions">
+        <button id="flex-cancel" class="btn-secondary">Cancel</button>
+        <button id="flex-run" class="btn-primary">Run</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/mobile_app.js"></script>
+</body>
+</html>
