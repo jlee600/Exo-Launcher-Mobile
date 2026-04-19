@@ -12,6 +12,8 @@ SAFE_NAME_RE = re.compile(r'^[A-Za-z0-9_\-\.]+$')
 def ready_locally(name):
     if not SAFE_NAME_RE.match(name):
         return False
+    if not os.path.exists(Local_Paths.OUTPUT):
+        return False
     try:
         with open(Local_Paths.OUTPUT, "r") as f:
             cmp = json.load(f)
@@ -24,10 +26,7 @@ def ready_locally(name):
 
 def _kill_process(pattern):
     cmd = f"sudo pkill -15 -f {shlex.quote(pattern)}"
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    if result.returncode == 0:
-        logger.info(f"[EXECUTOR] Stopped process matching: {pattern}")
-    return result
+    return subprocess.run(cmd, shell=True, capture_output=True, text=True)
 
 def run_controller(name):
     normalized = name if name.endswith(".py") else f"{name}.py"
@@ -46,76 +45,50 @@ def run_controller(name):
         f"nohup {conda_env}/bin/python {shlex.quote(normalized)} > controller.log 2>&1 < /dev/null &"
     )
     
-    logger.warning(f"[EXECUTOR] Running {normalized} locally...")
-    
     try:
         proc = subprocess.Popen(["bash", "-c", cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
         try:
             proc.wait(timeout=2.0)
             if proc.returncode != 0:
                 err = proc.stderr.read().decode('utf-8').strip()
-                return (False, f"Crashed immediately:\n{err}")
+                return (False, f"Crashed immediately: {err}")
         except subprocess.TimeoutExpired:
-            logger.info("[EXECUTOR] Controller started successfully in background.")
+            pass
     except Exception as e:
-        return (False, f"Failed to start controller: {str(e)}")
+        return (False, str(e))
 
     devices_cmd = f"sudo -n bash {shlex.quote(Local_Paths.DEVICES_SCRIPT)}"
-    logger.warning("[EXECUTOR] Setting up active devices...")
-    res = subprocess.run(devices_cmd, shell=True, capture_output=True, text=True)
+    subprocess.run(devices_cmd, shell=True)
     
-    if res.returncode != 0:
-        logger.error(f"[EXECUTOR] Device setup failed:\n{res.stderr}")
-    else:
-        logger.info("[EXECUTOR] Active device setup successful.")
-
-    return (True, "Local controller started successfully")
-
+    return (True, "Started successfully")
 
 def run_flexible_controller(name, config):
     normalized = name if name.endswith(".py") else f"{name}.py"
     
     try:
+        os.makedirs(os.path.dirname(Local_Paths.FLEX_CONFIG), exist_ok=True)
         with open(Local_Paths.FLEX_CONFIG, "w") as f:
             json.dump(config, f, indent=2)
-        logger.info(f"[EXECUTOR] Flexible config written to {Local_Paths.FLEX_CONFIG}")
     except Exception as e:
-        return (False, f"Failed to write local flexible config: {e}")
+        return (False, str(e))
 
     if config.get("Xsensors"):
-        logger.warning("[EXECUTOR] Xsensors enabled. Launching xscore-producer...")
         _kill_process("producer.py")
-        
         user = SystemConfig.USER
-        xsens_cmd = (
-            f"source ~/miniconda3/etc/profile.d/conda.sh && "
-            f"conda activate /home/{user}/miniconda3/envs/{user} && "
-            "nohup python xscore/xscore_driver/xscore_driver/producer.py > /dev/null 2>&1 < /dev/null &"
-        )
-        subprocess.Popen(["bash", "-c", xsens_cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        x_cmd = f"source ~/miniconda3/etc/profile.d/conda.sh && conda activate {user} && nohup python xscore/xscore_driver/xscore_driver/producer.py > /dev/null 2>&1 < /dev/null &"
+        subprocess.Popen(["bash", "-c", x_cmd])
         time.sleep(2) 
 
     return run_controller(normalized)
-
 
 def stop_controller(name):
     normalized = name if name.endswith(".py") else f"{name}.py"
 
     _kill_process("connection_hub.py")
-    
-    logger.warning(f"[EXECUTOR] Stopping local controller: {normalized}")
     _kill_process(normalized)
-    
     _kill_process("producer.py")
 
     setup_cmd = f"sudo -n bash {shlex.quote(Local_Paths.SETUP_DEVICES_SCRIPT)}"
-    logger.warning("[EXECUTOR] Resetting CAN bus and devices...")
-    res = subprocess.run(setup_cmd, shell=True, capture_output=True, text=True)
+    subprocess.run(setup_cmd, shell=True)
     
-    if res.returncode != 0:
-        logger.error(f"[EXECUTOR] Device reset failed:\n{res.stderr}")
-    else:
-        logger.info("[EXECUTOR] Device reset successful.")
-
-    return (True, "Stopped successfully.")
+    return (True, "Stopped")
