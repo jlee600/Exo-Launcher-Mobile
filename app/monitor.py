@@ -1,3 +1,4 @@
+import os
 import time
 import threading
 import subprocess
@@ -9,6 +10,8 @@ class HardwareMonitor:
     def __init__(self, interval=4):
         self.interval = interval
         self.running = False
+
+        os.makedirs(os.path.dirname(Local_Paths.OUTPUT), exist_ok=True)
 
     def update_cycle(self):
         user = SystemConfig.USER

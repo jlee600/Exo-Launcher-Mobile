@@ -26,11 +26,16 @@ function updateUI(output, meta) {
     const isReady = info.status === 1;
     const isRunning = runningController === name;
     
+    const missingErrors = (info.missing && info.missing.length > 0) ? info.missing.join('<br>• ') : '';
+
     card.className = `card ${isReady ? 'ready' : 'blocked'}`;
     card.innerHTML = `
       <div class="card-info">
         <div class="card-name">${name.replace('.py', '')}</div>
-        <div class="card-status">${isReady ? 'Ready to run' : info.missing.join(', ')}</div>
+        <div class="card-status" style="${isReady ? 'color: var(--success);' : 'color: var(--danger);'}">
+          ${isReady ? 'Ready' : 'Missing:'} <br>
+          <span style="font-size: 11px;">${missingErrors}</span>
+        </div>
       </div>
       <button class="btn-action ${isRunning ? 'btn-stop' : (isReady ? 'btn-run' : 'btn-disabled')}" 
               onclick="handleAction('${name}', ${isRunning}, ${isReady})">
