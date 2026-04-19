@@ -10,12 +10,9 @@ class HardwareMonitor:
     def __init__(self, interval=4):
         self.interval = interval
         self.running = False
-
         os.makedirs(os.path.dirname(Local_Paths.OUTPUT), exist_ok=True)
 
     def update_cycle(self):
-        user = SystemConfig.USER
-        
         compare_cmd = (
             f"python3 {shlex.quote(Local_Paths.COMPARE_SCRIPT)} "
             f"--req {shlex.quote(Local_Paths.CONTROLLER_CONFIGS)} "
@@ -25,8 +22,8 @@ class HardwareMonitor:
 
         while self.running:
             try:
-                subprocess.run(["sudo", "-n", "bash", Local_Paths.SETUP_DEVICES_SCRIPT], capture_output=True)
-                subprocess.run(["bash", "-c", compare_cmd], capture_output=True)
+                subprocess.run(["sudo", "-n", "bash", Local_Paths.SETUP_DEVICES_SCRIPT], capture_output=True, check=True)                
+                subprocess.run(["bash", "-c", compare_cmd], capture_output=True, check=True)
                 
             except Exception as e:
                 logger.error(f"[MONITOR] Loop error: {e}")
@@ -37,4 +34,4 @@ class HardwareMonitor:
         if not self.running:
             self.running = True
             threading.Thread(target=self.update_cycle, daemon=True).start()
-            logger.info("[MONITOR] Hardware monitor started via config_compare.py")
+            logger.info("[MONITOR] Hardware monitor started (Triggering config_compare.py)")

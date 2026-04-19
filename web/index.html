@@ -1,45 +1,51 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>EPIC Mobile Controller</title>
+  <title>EPIC Mobile Launcher</title>
   <link rel="stylesheet" href="./assets/mobile_style.css">
 </head>
 <body>
   <header>
-    <h1>EPIC Mobile Launcher</h1>
+    <h1>EPIC Mobile</h1>
     <div id="connection-status" class="status-badge">Connecting...</div>
   </header>
 
   <main>
     <section class="info-card">
-      <div class="info-row">
-        <span>SSID:</span> <strong id="wifi-name">—</strong>
-      </div>
-      <div class="info-row">
-        <span>Updated:</span> <span id="last-update">—</span>
-      </div>
+      <div class="info-row"><span>Host:</span> <strong id="jetson-host">—</strong></div>
+      <div class="info-row"><span>Wi-Fi:</span> <strong id="wifi-name">—</strong></div>
+      <div class="info-row"><span>Last Sync:</span> <span id="last-update">—</span></div>
     </section>
 
-    <section id="controller-list" class="grid-container">
-      </section>
+    <section id="controller-list" class="grid-container"></section>
   </main>
-
-  <div id="toast-container"></div>
 
   <div id="flex-modal" class="modal" hidden>
     <div class="modal-content">
-      <h3>Flexible Device Config</h3>
-      <div id="flex-form">
+      <h3>Flexible Device Setup</h3>
+      <div class="flex-scroll-area">
+        <h4>IMU Assignments</h4>
+        <div id="imu-inputs" class="input-group">
+          <label>Pelvis <input type="number" id="f-imu-pelvis" /></label>
+          <label>R-Thigh <input type="number" id="f-imu-rt" /></label>
+          <label>L-Thigh <input type="number" id="f-imu-lt" /></label>
         </div>
+        <h4>Motor IDs</h4>
+        <div id="motor-inputs" class="input-group">
+          <label>R-Hip <input type="number" id="f-motor-rh" value="4"/></label>
+          <label>L-Hip <input type="number" id="f-motor-lh" value="2"/></label>
+        </div>
+      </div>
       <div class="modal-actions">
-        <button id="flex-cancel" class="btn-secondary">Cancel</button>
-        <button id="flex-run" class="btn-primary">Run</button>
+        <button onclick="closeFlexModal()" class="btn-secondary">Cancel</button>
+        <button onclick="submitFlexRun()" class="btn-primary">Run</button>
       </div>
     </div>
   </div>
 
+  <div id="toast-container"></div>
   <script src="./assets/mobile_app.js"></script>
 </body>
 </html>
