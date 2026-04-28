@@ -8,16 +8,29 @@
 </head>
 <body>
   <header>
-    <h1>EPIC Mobile</h1>
-    <div id="connection-status" class="status-badge">Connecting...</div>
+    <div class="header-top">
+      <h1>EPIC Mobile</h1>
+      <div id="connection-status" class="status-badge">Connecting...</div>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="ctrl-search" placeholder="Search controllers or @missing..." autocomplete="off">
+    </div>
   </header>
 
   <main>
-    <section class="info-card">
-      <div class="info-row"><span>Host:</span> <strong id="jetson-host">—</strong></div>
-      <div class="info-row"><span>Wi-Fi:</span> <strong id="wifi-name">—</strong></div>
-      <div class="info-row"><span>Last Sync:</span> <span id="last-update">—</span></div>
-    </section>
+    <details class="hw-status-details">
+      <summary>Hardware Status (Sensors & Motors)</summary>
+      <div class="hw-tables">
+        <table id="sensor-table">
+          <thead><tr><th>ID</th><th>Type</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <table id="motor-table">
+          <thead><tr><th>ID</th><th>Type</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </details>
 
     <section id="controller-list" class="grid-container"></section>
   </main>
@@ -26,17 +39,22 @@
     <div class="modal-content">
       <h3>Flexible Device Setup</h3>
       <div class="flex-scroll-area">
-        <h4>IMU Assignments</h4>
-        <div id="imu-inputs" class="input-group">
-          <label>Pelvis <input type="number" id="f-imu-pelvis" /></label>
-          <label>R-Thigh <input type="number" id="f-imu-rt" /></label>
-          <label>L-Thigh <input type="number" id="f-imu-lt" /></label>
+        <h4>IMU Assignments (5 Positions)</h4>
+        <div class="input-group">
+          <label>Pelvis <select id="f-imu-pelvis"></select></label>
+          <label>R-Thigh <select id="f-imu-rt"></select></label>
+          <label>R-Shank <select id="f-imu-rs"></select></label>
+          <label>L-Thigh <select id="f-imu-lt"></select></label>
+          <label>L-Shank <select id="f-imu-ls"></select></label>
         </div>
         <h4>Motor IDs</h4>
-        <div id="motor-inputs" class="input-group">
-          <label>R-Hip <input type="number" id="f-motor-rh" value="4"/></label>
-          <label>L-Hip <input type="number" id="f-motor-lh" value="2"/></label>
+        <div class="input-group">
+          <label>R-Hip <select id="f-motor-rh"></select></label>
+          <label>L-Hip <select id="f-motor-lh"></select></label>
         </div>
+        <label class="flex-xsens">
+          <input type="checkbox" id="f-xsensors" checked /> Use Xsensors (insoles)
+        </label>
       </div>
       <div class="modal-actions">
         <button onclick="closeFlexModal()" class="btn-secondary">Cancel</button>
